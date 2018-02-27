@@ -39,14 +39,18 @@ int hashFunc(char *str){
 	return e;
 }
 
-void nodeFree(dfaNode *n){
+static void nodeFree(dfaNode *n){
 	table_kill(n->connections, free, free);
 	free(t->label);
 	free(n);
 }
 
-char *nodeGetLabel(dfaNode *n){
+static char *nodeGetLabel(dfaNode *n){
 	return n->label;
+}
+
+static dfaNode *dfa_getNode(dfaType *dfa, char *str){
+	return table_lookup(dfa->nodes, str);
 }
 
 dfaType *dfaInit(size_t cap, char *start, size_t range){
@@ -57,23 +61,25 @@ dfaType *dfaInit(size_t cap, char *start, size_t range){
 	dfa->nodes = table_empty(cap, stringcmp, hashFunc);
 }
 
-dfaNode *addNode(dfaType *dfa, char *label){
+void addNode(dfaType *dfa, char *label){
 	dfaNode *n = malloc(sizeof(dfaNode));
 	n->label = label;
 	n->connections = table_empty(dfa->range, stringcmp, hashFunc);
 	table_insert(dfa->nodes, label, n);
-	return n;
 }
 
 void addConnection(dfaType *dfa, char *orig, char *input, char *dest){
-	dfaNode *origNode = table_lookup(dfa->nodes, orig);
-	dfaNode *destNode = table_lookup(dfa->nodes, dest);
+	dfaNode *origNode = dfa_getNode(dfa, orig);
+	dfaNode *destNode = dfa_getNode(dfa, dest);
 	table_insert(origNode->connections, input, destNode);
 }
 
-void setAccepted(dfaType *dfa, dfaNode *n){
+void setAccepted(dfaType *dfa, char *label){
+	dfaNode *n = dfa_getNode(dfa, label);
 	table_insert(dfa->accepted, getLabel(n), n);
 }
+
+
 
 void dfaKill(dfaType *dfa){
 	table_kill(dfa->nodes, free, freeNode);
@@ -81,18 +87,19 @@ void dfaKill(dfaType *dfa){
 
 }
 
-dfaNode *dfaTraverse(dfaType *dfa, dfaNode *origNode, char *str){
-	dfaNode *destNode = table_lookup(n->connections, str);
+char *dfaTraverse(dfaType *dfa, char *orig, char *input){
+	dfaNode *origNode = dfa_getNode(dfa, origNode);
+	dfaNode *destNode = table_lookup(origNode->connections, input);
 	if (destNode != NULL){
-		return destNode;
+		return getLabel(destNode);
 	} else {
 		printf("Va.\n");
-		return origNode;
+		return orig;
 	}
 }
 
-bool checkAccepted(dfaType *dfa, char *str){
-	if (table_lookup(dfa->accepted, str)){
+bool checkAccepted(dfaType *dfa, char *endNodeLabel){
+	if (table_lookup(dfa->accepted, endNodeLabel)){
 		return true;
 	} else {
 		return false;
