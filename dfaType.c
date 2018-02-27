@@ -3,7 +3,7 @@
 struct {
 	char *label;
 	table *connections;
-};
+} dfaNode;
 
 typedef struct {
   size_t range;
@@ -26,8 +26,9 @@ bool stringcmp(void *p1, void *p2){
 
 	if (str2[i] != 0) {
 		return 0;
+	} else {
+		return 1;
 	}
-	return 1;
 }
 
 int hashFunc(char *str){
@@ -48,40 +49,45 @@ char *nodeGetLabel(dfaNode *n){
 	return n->label;
 }
 
-dfaType *dfaInit(size_t cap, char *start, int range){
+dfaType *dfaInit(size_t cap, char *start, size_t range){
 	dfaType *dfa = malloc(sizeof(dfaType));
 	dfa->range = range;
-	dfa->start = NULL;
+	dfa->start = start;
 	dfa->accepted = table_empty(cap, stringcmp, hashFunc);
 	dfa->nodes = table_empty(cap, stringcmp, hashFunc);
 }
 
-void addNode(dfaType *dfa, char *label){
+dfaNode *addNode(dfaType *dfa, char *label){
 	dfaNode *n = malloc(sizeof(dfaNode));
 	n->label = label;
 	n->connections = table_empty(dfa->range, stringcmp, hashFunc);
 	table_insert(dfa->nodes, label, n);
+	return n;
 }
 
-void addConnection(dfaType *dfa, char *str, char *orig, char *dest){
-	dfaNode *n = table_lookup(dfa->nodes, orig);
-	table_insert(n->connections, str, dest);
+void addConnection(dfaType *dfa, char *orig, char *input, char *dest){
+	dfaNode *origNode = table_lookup(dfa->nodes, orig);
+	dfaNode *destNode = table_lookup(dfa->nodes, dest);
+	table_insert(origNode->connections, input, destNode);
 }
 
-void setAccepted(dfaType *dfa, char *label){
-	table_insert(dfa->accepted, label, NULL);
+void setAccepted(dfaType *dfa, dfaNode *n){
+	table_insert(dfa->accepted, getLabel(n), n);
 }
 
 void dfaKill(dfaType *dfa){
-	table_kill(dfa->accepted, free, free);
 	table_kill(dfa->nodes, free, freeNode);
+	table_kill(dfa->accepted, free, NULL);
 
 }
 
-dfaNode *dfaTraverse(dfaType *dfa, dfaNode *n, char *str){
-	char *key = table_lookup(n->connections, key);
-	if (key){
-		return table_lookup(dfa, key);
+dfaNode *dfaTraverse(dfaType *dfa, dfaNode *origNode, char *str){
+	dfaNode *destNode = table_lookup(n->connections, str);
+	if (destNode != NULL){
+		return destNode;
+	} else {
+		printf("Va.\n");
+		return origNode;
 	}
 }
 
