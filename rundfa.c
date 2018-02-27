@@ -18,10 +18,10 @@ dfaHeader *createHeader(FILE *fp){
 }
 
 void inputConnection(dfaType *dfa, FILE *fp){
-	
+
 }
 
-dfaHeader *headerInit(){
+dfaHeader *headerInit(void){
 	dfaHeader *h = malloc(sizeof(dfaHeader));
 	h->start = calloc(sizeof(char) * MAX_LINE_SIZE);
 	h->accepted = calloc(sizeof(char) * MAX_LINE_SIZE);
@@ -31,4 +31,23 @@ dfaHeader *headerInit(){
 
 void readLine(char *str, FILE *fp){
 	fgets(str, MAX_LINE_SIZE, fp);
+}
+
+dfaType *buildDfaType(dfaHeader *header, ) {
+
+	//INTERN STRUCT?
+
+	//GÅ IGENOM HEADER
+
+	//SKAPA DFATYPE MED HJÄLP AV HEADERINFO
+
+	//LÄSER CONNECTIONS WHILE LOOP
+		//TA HAND OM VARJE RAD
+			//FSCANF PÅ VARJE RAD
+			//SPARA TILL STRUCT
+
+		//SKAPA CONNECTIONS I DFATYPE MED HJÄLP AV INTERN STRUCT
+
+	return d;
+
 }
