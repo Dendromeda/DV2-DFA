@@ -4,77 +4,82 @@
 #include "table.h"
 
 typedef struct dfaNode dfaNode;
-typedef *nodeFunc(void*);
-struct {
-	char *label;
-	table *connections;
-	nodeFunc func;
-};
-
-typedef struct {
-  size_t range;
-  char *start;
-  table *accepted;
-  table *nodes;
-} dfaType;
-
-bool stringcmp(void *p1, void *p2){
-	int i = 0;
-	char *str1 = p1;
-	char *str2 = p2;
-
-	while(str1[i] != 0) {
-		if (str1[i] != str2[i]) {
-			return 0;
-		}
-		i++;
-	}
-
-	if (str2[i] != 0) {
-		return 0;
-	}
-	return 1;
-}
-
-int hashFunc(char *str){
-	int e = 0;
-	for (int i = 0; str[i]; i++){
-			e += str[i];
-	}
-	return e;
-}
-
-char *nodeGetLabel(dfaNode *n){
-	return n->label;
-}
-
-dfaType *dfaInit(size_t cap){
-	dfaType *dfa = malloc(sizeof(dfaType));
-	dfa->start = NULL;
-	dfa->accepted = table_empty(cap, stringcmp, hashFunc);
-	dfa->nodes = table_empty(cap, stringcmp, hashFunc);
-}
-
-dfaNode dfaMakeNode(char *label, int range, *nodeFunc func){
-	dfaNode *n = malloc(sizeof(dfaNode));
-	n->label = label;
-	n->connections = table_empty(range, stringcmp, hashFunc);
-	n->nodeFunc = func;
-}
-
-void addConnection(dfaNode *n, char *key, char *label){
-	table_insert(n->connections, key, label);
-}
-
-void addNode(dfaType *dfa, dfaNode *n){
-	table_insert(dfa->nodes, nodeGetLabel(n), n);
-}
-
-void setAccepted(dfaType *dfa, dfaNode *n){
-	table_insert(dfa->accepted, nodeGetLabel(n), n);
-}
 
 
+bool stringcmp(void *p1, void *p2);
+
+/* Function:	hashFunc
+ * Description:	adds ASCII values of each character in string
+ * Input: 		string to be hashed
+ * Output:		int with hash value
+ */
+int hashFunc(void *str);
+
+/* Function:	nodeFree
+ * Description:	frees all allocated memory in dfaNode structure
+ * Input:		dfaNode
+ * Output:		-
+ */
+void nodeFree(dfaNode *n);
+
+/* Function:	nodeGetLabel
+ * Description:	Returns label string of given dfaNode
+ * Input:		dfaNode
+ * Output:		string
+ */
+char *nodeGetLabel(dfaNode *n);
+
+/* Function:	dfaInit
+ * Description:	Creates new dfaType structure, initiated with start node.
+ * Input:		int for dfa capacity, name string of start node, and int range
+ 				of alphabet.
+ * Output:		dfaType
+ */
+dfaType *dfaInit(size_t cap, char *start, int range);
+
+/* Function:	addNode
+ * Description:	Creates dfaNode with label,and adds it to table of nodes in
+ 				dfaType with label as key
+ * Input:		dfaType, string label
+ * Output:		-
+ */
+void addNode(dfaType *dfa, char *label);
+
+/* Function:	addConnection
+ * Description:	Finds the origin dfaNode and adds dest to connection tabLe
+ 				with str as key
+ * Input:		dfaType, key string, origin node name, destination node name
+ * Output:		-
+ */
+void addConnection(dfaType *dfa, char *str, char *orig, char *dest);
+
+/* Function:	setAccepted
+ * Description:	adds node label to accepted table in dfaType,
+ * Input:
+ * Output:
+ */
+void setAccepted(dfaType *dfa, char *label);
+
+/* Function:
+ * Description:
+ * Input:
+ * Output:
+ */
+void dfaKill(dfaType *dfa);
+
+/* Function:
+ * Description:
+ * Input:
+ * Output:
+ */
+dfaNode *dfaTraverse(dfaType *dfa, dfaNode *n, char *str);
+
+/* Function:
+ * Description:
+ * Input:
+ * Output:
+ */
+bool checkAccepted(dfaType *dfa, char *str);
 
 
 #endif

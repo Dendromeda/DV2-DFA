@@ -2,12 +2,15 @@
 
 #include "huffmanTable.h"
 
+typedef *keyFreeFunc(void*);
+typedef *valFreeFunc(void*);
+
 typedef struct cell cell;
 
 struct cell{
 	KEY key;
 	VALUE val;
-	cell *next; // Pekare till annan cell vars nyckel har samma hash, i en 
+	cell *next; // Pekare till annan cell vars nyckel har samma hash, i en
 	//riktad lista
 };
 
@@ -19,9 +22,9 @@ cell *cell_create(KEY key, VALUE val, cell *link){
 	return c;
 }
 
-void cell_kill(cell **c){ // Dubbelpekare pekar på länken i föregående värde 
+void cell_kill(cell **c){ // Dubbelpekare pekar på länken i föregående värde
 //eller pekaren i arrayen (om cellen är först i listan)
-	cell *tmp = (*c)->next; 
+	cell *tmp = (*c)->next;
 	free((*c)->key);
 	free((*c)->val);
 	free(*c);
@@ -33,13 +36,13 @@ struct table
 {
 	size_t cap;
     size_t size;
-	cell **buckets; 
+	cell **buckets;
 	//Dubbelpekare till första elementet i en array med cell-pekare
 	key_compare_func key_cmp;
 	key_hash_func hash;
 };
 
-cell **table_find(table *t, KEY key){ 
+cell **table_find(table *t, KEY key){
 	// Returnerar dubbelpekare för att enklare kunna användas med cell_kill
 	int ix = (t->hash(key))%(t->cap);
 	cell **c = &(t->buckets[ix]);
@@ -55,12 +58,12 @@ cell **table_find(table *t, KEY key){
 table *table_empty(int capacity, key_compare_func cmp, key_hash_func hash)
 {
     table *t;
-	
+
     t = malloc(sizeof *t);
 	t->cap = capacity;
     t->size = 0;
-	t->buckets = calloc(sizeof(cell*), capacity); 
-	//Allokerar och rensar minne åt cellpekar-arrayen, 
+	t->buckets = calloc(sizeof(cell*), capacity);
+	//Allokerar och rensar minne åt cellpekar-arrayen,
 	t->key_cmp = cmp;
 	t->hash = hash;
     return t;
@@ -79,11 +82,11 @@ void table_insert(table *t, KEY key, VALUE val)
     cell **d = table_find(t, key);
 	if (*d != NULL){ // Om table_find hittat dublett, tas cellen bort
 		cell_kill(d);
-		t->size -= 1; 
-		// Minskar t->size trots att det ökas igen. 
+		t->size -= 1;
+		// Minskar t->size trots att det ökas igen.
 		//Detta för att slippa göra en extra koll
 	}
-	cell *c = cell_create(key, val, t->buckets[ix]); 
+	cell *c = cell_create(key, val, t->buckets[ix]);
 	//Lägger in det nya värdet först i rätt buckets lista
 	t->buckets[ix] = c;
 	t->size += 1;
@@ -110,14 +113,27 @@ void table_remove(table *t, KEY key)
 }
 
 
-void table_kill(table *t)
+void table_kill(table *t, *keyFreeFunc keyFree, *valFreeFunc valFree);
 {
 	cell *c;
     for (int i = 0; i < t->cap; i++){
-		c = t->buckets[i]; 
+		c = t->buckets[i];
 		while (c != NULL){ //Om pekaren i arrayen är NULL är bucket tom
 			cell *tmp = c;
 			c = c->next;
+
+			if (keyFree){
+				keyFree(c->key);
+			}
+			else {
+				free(c->key)
+			}
+			if (valFree){
+				valFree(c->val);
+			}
+			else {
+				free(c->val);
+			}
 			cell_kill(&tmp);
 		}
 	}
