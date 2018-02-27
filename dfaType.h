@@ -15,27 +15,13 @@ bool stringcmp(void *p1, void *p2);
  */
 int hashFunc(void *str);
 
-/* Function:	nodeFree
- * Description:	frees all allocated memory in dfaNode structure
- * Input:		dfaNode
- * Output:		-
- */
-void nodeFree(dfaNode *n);
-
-/* Function:	nodeGetLabel
- * Description:	Returns label string of given dfaNode
- * Input:		dfaNode
- * Output:		string
- */
-char *nodeGetLabel(dfaNode *n);
-
 /* Function:	dfaInit
  * Description:	Creates new dfaType structure, initiated with start node.
  * Input:		int for dfa capacity, name string of start node, and int range
  				of alphabet.
  * Output:		dfaType
  */
-dfaType *dfaInit(size_t cap, char *start, int range);
+dfaType *dfa_init(size_t cap, char *start, size_t range);
 
 /* Function:	addNode
  * Description:	Creates dfaNode with label,and adds it to table of nodes in
@@ -43,7 +29,7 @@ dfaType *dfaInit(size_t cap, char *start, int range);
  * Input:		dfaType, string label
  * Output:		-
  */
-void addNode(dfaType *dfa, char *label);
+void dfa_addNode(dfaType *dfa, char *label);
 
 /* Function:	addConnection
  * Description:	Finds the origin dfaNode and adds dest to connection tabLe
@@ -51,35 +37,35 @@ void addNode(dfaType *dfa, char *label);
  * Input:		dfaType, key string, origin node name, destination node name
  * Output:		-
  */
-void addConnection(dfaType *dfa, char *str, char *orig, char *dest);
+void dfa_addConnection(dfaType *dfa, char *orig, char *input, char *dest);
 
 /* Function:	setAccepted
  * Description:	adds node label to accepted table in dfaType,
  * Input:
  * Output:
  */
-void setAccepted(dfaType *dfa, char *label);
+void dfa_setAccepted(dfaType *dfa, char *label);
 
 /* Function:
  * Description:
  * Input:
  * Output:
  */
-void dfaKill(dfaType *dfa);
+void dfa_kill(dfaType *dfa);
 
 /* Function:
  * Description:
  * Input:
  * Output:
  */
-dfaNode *dfaTraverse(dfaType *dfa, dfaNode *n, char *str);
+char *dfa_traverse(dfaType *dfa, char *orig, char *input);
 
 /* Function:
  * Description:
  * Input:
  * Output:
  */
-bool checkAccepted(dfaType *dfa, char *str);
+bool dfa_checkAccepted(dfaType *dfa, char *endNodeLabel);
 
 
 #endif
