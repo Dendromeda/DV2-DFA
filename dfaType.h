@@ -6,7 +6,11 @@
 
 typedef struct dfaType dfaType;
 
-
+/* Function:	stringcmp
+ * Description:	Compares two strings, returns true if identical.
+ * Input:		Two strings.
+ * Output:		Boolean.
+ */
 bool stringcmp(void *p1, void *p2);
 
 /* Function:	hashFunc
