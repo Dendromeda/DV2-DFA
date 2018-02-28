@@ -12,7 +12,7 @@ rundfa.o: rundfa.c rundfa.h
 dfaType.o: dfaType.c dfaType.h
 	$(CC) $(CFLAGS) -c dfaType.c
 
-table-hash.o: table-hash.c table.h
+table-hash.o: table-hash.c table-hash.h
 	$(CC) $(CFLAGS) -c table-hash.c
 
 .PHONY: clean

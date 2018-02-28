@@ -1,7 +1,7 @@
 #ifndef DFATYPE_H
 #define DFATYPE_H
 
-#include "table.h"
+#include "table-hash.h"
 #include <stdlib.h>
 
 typedef struct dfaType dfaType;
