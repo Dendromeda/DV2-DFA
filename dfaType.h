@@ -28,6 +28,12 @@ size_t hashFunc(void *key);
  */
 dfaType *dfa_init(size_t cap, char *start, size_t range);
 
+/* Function:	dfaInit
+ * Description:	Creates new dfaType structure, initiated with start node.
+ * Input:		int for dfa capacity, name string of start node, and int range
+ 				of alphabet.
+ * Output:		dfaType
+ */
 char *dfa_getStart(dfaType *dfa);
 
 /* Function:	addNode
@@ -73,14 +79,5 @@ char *dfa_traverse(dfaType *dfa, char *orig, char *input);
  * Output:
  */
 bool dfa_checkAccepted(dfaType *dfa, char *endNodeLabel);
-
-//DEBUGKOD
-table *getNodeTable(dfaType *dfa);
-
-
-typedef struct{
-	char *label;
-	table *connections;
-}dfaNode;
 
 #endif
