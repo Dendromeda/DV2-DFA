@@ -9,6 +9,8 @@ typedef void *KEY;
 typedef void *VALUE;
 typedef bool (*key_compare_func)(KEY, KEY);
 typedef size_t (*key_hash_func)(KEY);
+typedef void (*keyFreeFunc)(void*);
+typedef void (*valFreeFunc)(void*);
 typedef struct table table;
 
 
@@ -17,7 +19,7 @@ typedef struct table table;
  *
  * Free resources by calling table_kill().
  *
- * \param [in] capacity The capacity of the underlying data structure (if applicable). 
+ * \param [in] capacity The capacity of the underlying data structure (if applicable).
  * \param [in] cmp The key compare function (tests key equality).
  * \param [in] hash The key hash function (may be NULL if not a hash table).
  * \return A dynamically allocated empty table.
@@ -79,6 +81,6 @@ void table_remove(table *t, KEY key);
  *
  * \param [in] t The table to deallocate.
  */
-void table_kill(table *t);
+void table_kill(table *t, keyFreeFunc keyFree, valFreeFunc valFree);
 
 #endif

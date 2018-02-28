@@ -2,8 +2,9 @@
 #define DFATYPE_H
 
 #include "table.h"
+#include <stdlib.h>
 
-typedef struct dfaNode dfaNode;
+typedef struct dfaType dfaType;
 
 
 bool stringcmp(void *p1, void *p2);
@@ -13,7 +14,7 @@ bool stringcmp(void *p1, void *p2);
  * Input: 		string to be hashed
  * Output:		int with hash value
  */
-int hashFunc(void *str);
+size_t hashFunc(void *key);
 
 /* Function:	dfaInit
  * Description:	Creates new dfaType structure, initiated with start node.

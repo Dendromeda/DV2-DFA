@@ -1,9 +1,6 @@
 #include <stdlib.h>
 
-#include "huffmanTable.h"
-
-typedef *keyFreeFunc(void*);
-typedef *valFreeFunc(void*);
+#include "table.h"
 
 typedef struct cell cell;
 
@@ -113,10 +110,9 @@ void table_remove(table *t, KEY key)
 }
 
 
-void table_kill(table *t, *keyFreeFunc keyFree, *valFreeFunc valFree);
-{
+void table_kill(table *t, keyFreeFunc keyFree, valFreeFunc valFree){
 	cell *c;
-    for (int i = 0; i < t->cap; i++){
+    for (size_t i = 0; i < t->cap; i++){
 		c = t->buckets[i];
 		while (c != NULL){ //Om pekaren i arrayen är NULL är bucket tom
 			cell *tmp = c;
@@ -125,14 +121,8 @@ void table_kill(table *t, *keyFreeFunc keyFree, *valFreeFunc valFree);
 			if (keyFree){
 				keyFree(c->key);
 			}
-			else {
-				free(c->key)
-			}
 			if (valFree){
 				valFree(c->val);
-			}
-			else {
-				free(c->val);
 			}
 			cell_kill(&tmp);
 		}
