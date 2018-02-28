@@ -62,9 +62,9 @@ static char *nodeGetLabel(dfaNode *n){
  * Output:		-
  */
 static void freeNode(void *v){
-	dfaNode *n = n;
+	dfaNode *n = v;
 	table_kill(n->connections);
-	free(n->label);
+	//free(n->label);
 	free(n);
 }
 
@@ -83,7 +83,7 @@ dfaType *dfa_init(size_t cap, char *start, size_t range){
 	dfa->range = range;
 	dfa->start = start;
 	dfa->nodes = table_empty(cap, &stringcmp, &hashFunc, *free, &freeNode);
-	dfa->accepted = table_empty(cap, &stringcmp, &hashFunc, *free, NULL);
+	dfa->accepted = table_empty(cap, &stringcmp, &hashFunc, NULL, NULL);
 	return dfa;
 }
 
@@ -96,7 +96,7 @@ void dfa_addNode(dfaType *dfa, char *label){
 	dfaNode *n = malloc(sizeof(dfaNode));
 	n->label = label;
 	n->connections = table_empty(dfa->range, stringcmp, hashFunc,
-		                         *free, &freeNode);
+		                         *free, NULL);
 	table_insert(dfa->nodes, (void*)label, n);
 	printf("ADDED %s\n", label);
 }
@@ -105,7 +105,8 @@ void dfa_addNode(dfaType *dfa, char *label){
 void dfa_addConnection(dfaType *dfa, char *orig, char *input, char *dest){
 	dfaNode *origNode = getNode(dfa, orig);
 	dfaNode *destNode = getNode(dfa, dest);
-	table_insert(origNode->connections, input, destNode);
+	table *t = origNode->connections;
+	table_insert(t, input, destNode);
 
 	//DEbUGKOD
 	printf("origNode: %s\n", nodeGetLabel(origNode));
@@ -126,6 +127,7 @@ void dfa_setAccepted(dfaType *dfa, char *label){
 void dfa_kill(dfaType *dfa){
 	table_kill(dfa->nodes);
 	table_kill(dfa->accepted);
+	free(dfa);
 
 }
 

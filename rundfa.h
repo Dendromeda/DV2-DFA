@@ -4,17 +4,17 @@
 #include <string.h>
 
 #define MAX_LINE_SIZE 256
-#define NODE_CAPACITY 64
+#define NODE_CAPACITY 2
 #define MAX_LABEL_LENGTH 16
 #define INPUT_RANGE 2
 
-typedef struct connections connections;
+typedef struct conns conns;
 
 typedef struct dfaHeader dfaHeader;
 
 dfaHeader *createHeader(FILE *fp);
 
-bool inputConnection(connections *con, FILE *fp);
+bool inputConnection(conns *con, FILE *fp);
 
 dfaHeader *headerInit(void);
 

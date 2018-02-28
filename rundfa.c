@@ -8,7 +8,7 @@ struct dfaHeader{
 	char *misc;
 };
 
-struct connections{
+struct conns{
 	char *orig;
 	char *input;
 	char *dest;
@@ -20,7 +20,7 @@ int main(int argc, char **argv){
 	FILE *fp = openFile("test");
 	dfaType *dfa = buildDfaType(fp);
 
-	char *str = "1111202";
+	char *str = "111111111111";
 	int i = 0;
 	char *activeNode = malloc(sizeof(char)*MAX_LABEL_LENGTH);
 	activeNode = dfa_getStart(dfa);
@@ -37,8 +37,9 @@ int main(int argc, char **argv){
 	if (dfa_checkAccepted(dfa, activeNode)){
 		printf("OJJ, det funkar (kanske)\n");
 	}
-
-
+	free(activeNode);
+	free(c);
+	//dfa_kill(dfa);
 	return 0;
 }
 
@@ -50,7 +51,7 @@ dfaHeader *createHeader(FILE *fp){
 	return h;
 }
 
-bool inputConnection(connections *con, FILE *fp){
+bool inputConnection(conns *con, FILE *fp){
 	char *line = calloc(sizeof(char),MAX_LINE_SIZE);
 	if (fgets(line, MAX_LINE_SIZE, fp) == NULL){
 		free(line);
@@ -105,15 +106,35 @@ dfaType *buildDfaType(FILE *fp) { // range = argv[2]?
 		i = extractWord(h->misc, headerTemp, i);
 		dfa_addNode(dfa, headerTemp);
 	}
+	
+	//DEBUGKOD
+	free(h->accepted);
+	free(h->misc);
+	free(h);
+	
+	
+	
+	
+	
+	
+	
 
-	connections *con = malloc(sizeof(connections));
+	conns *con = malloc(sizeof(conns));
 		con->orig = calloc(sizeof(char), MAX_LABEL_LENGTH);
 		con->dest = calloc(sizeof(char), MAX_LABEL_LENGTH);
 		con->input = calloc(sizeof(char), MAX_LABEL_LENGTH); // length 2?
 	while (inputConnection(con, fp)){
+		printf("%s -%s-> %s", con->orig, con->input, con->dest);
 		dfa_addConnection(dfa, con->orig, con->input, con->dest);
 		con->input = calloc(sizeof(char), MAX_LABEL_LENGTH);
 	}
+	
+	free(con->orig);
+	free(con->input);
+	free(con->dest);
+	free(con);
+	
+	
 	//LÄSER CONNECTIONS WHILE LOOP
 
 		//TA HAND OM VARJE RAD
@@ -129,7 +150,7 @@ dfaType *buildDfaType(FILE *fp) { // range = argv[2]?
 int extractWord(char *line, char *str, int i){
 	int j = 0;
 	while ((line[i] != ' ') && (line[i] != '\0')){
-		if (line[i] == '\n'){
+		if (line[i] == '\n' || line[i] == '\r'){
 			i++;
 			continue;
 		}
@@ -139,7 +160,7 @@ int extractWord(char *line, char *str, int i){
 	}
 	str[j] = '\0';
 	i++;
-	//printf("%s\n", str);
+	printf("%s\n", str);
 	return i;
 }
 

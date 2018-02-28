@@ -22,17 +22,11 @@ cell *cell_create(KEY key, VALUE val, cell *link){
 void cell_kill(cell **c, keyFreeFunc keyFree, valFreeFunc valFree){ // Dubbelpekare pekar på länken i föregående värde
 //eller pekaren i arrayen (om cellen är först i listan)
 	cell *tmp = (*c)->next;
-	if (keyFree){
+	if (keyFree != NULL){
 		keyFree((*c)->key);
 	}
-	else{
-		free((*c)->key);
-	}
-	if (valFree){
+	if (valFree != NULL){
 		valFree((*c)->val);
-	}
-	else{
-		free((*c)->val);
 	}
 	free(*c);
 	*c = tmp;
@@ -61,6 +55,7 @@ cell **table_find(table *t, KEY key){
 		}
 		c = &((*c)->next);
 	}
+	(*c) = NULL;
 	return c;
 }
 
