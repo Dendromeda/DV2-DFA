@@ -6,6 +6,12 @@ struct dfaHeader{
 	char *misc;
 };
 
+struct connections{
+	char *orig;
+	char *input;
+	char *dest;
+};
+
 int main(int argc, char **argv){
 	return 0;
 }
@@ -18,8 +24,28 @@ dfaHeader *createHeader(FILE *fp){
 	return h;
 }
 
-void inputConnection(dfaType *dfa, FILE *fp){
-
+void inputConnection(connections *con, FILE *fp){
+	char *line = calloc(sizeof(char),MAX_LINE_SIZE);
+	fgets(line, MAX_LINE_SIZE, fp);
+	int i = 0;
+	int j = 0;
+	while (line[i] != ' ' && line[i] != '\0'){
+		con->orig[j] = line[i];
+		i++;
+		j++;
+	}
+	j = 0;
+	while (line[i] != ' ' && line[i] != '\0'){
+		con->input[j] = line[i];
+		i++;
+		j++;
+	}
+	j = 0;
+	while (line[i] != '\0'){
+		con->dest[j] = line[i];
+		i++;
+		j++;
+	}
 }
 
 dfaHeader *headerInit(void){
@@ -30,19 +56,10 @@ dfaHeader *headerInit(void){
 	return h;
 }
 
-void readLine(char *str, FILE *fp){
-	fgets(str, MAX_LINE_SIZE, fp);
-}
+dfaType *buildDfaType(FILE *fp) { // range = argv[2]?
 
-dfaType *buildDfaType(dfaHeader *header) { // range = argv[2]?
+	dfaHeader *h = createHeader(fp);
 
-	struct connections{
-		char *orig;
-		char *input;
-		char *dest;
-	};
-
-	dfaHeader *h = headerInit();
 	/*int c = 0;
 	for (int i = 0; h->accepted[i]; i++){  //GILLAR EJ DETTA
 		if (h->accepted[i] == ' '){
@@ -94,5 +111,9 @@ dfaType *buildDfaType(dfaHeader *header) { // range = argv[2]?
 		//SKAPA CONNECTIONS I DFATYPE MED HJÄLP AV INTERN STRUCT
 
 	return dfa;
+
+}
+
+void extractWord(char *line, char *str, int i){
 
 }

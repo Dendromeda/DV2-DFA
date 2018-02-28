@@ -14,10 +14,10 @@ typedef struct dfaHeader dfaHeader;
 
 dfaHeader *createHeader(FILE *fp);
 
-void inputConnection(dfaType *dfa, FILE *fp);
+void inputConnection(connections *con, FILE *fp);
 
 dfaHeader *headerInit(void);
 
 void readLine(char *str, FILE *fp);
 
-dfaType *buildDfaType(dfaHeader *header);
+dfaType *buildDfaType(FILE *fp);
