@@ -22,8 +22,7 @@ int main(int argc, char **argv){
 
 	char *str = "111111111111";
 	int i = 0;
-	char *activeNode = malloc(sizeof(char)*MAX_LABEL_LENGTH);
-	activeNode = dfa_getStart(dfa);
+	char *activeNode = dfa_getStart(dfa);
 	char *c = malloc(sizeof(char)*2);
 	c[1] = '\0';
 		printf("\nmain:\n");
@@ -37,9 +36,11 @@ int main(int argc, char **argv){
 	if (dfa_checkAccepted(dfa, activeNode)){
 		printf("OJJ, det funkar (kanske)\n");
 	}
-	free(activeNode);
+	//free(activeNode);
+	dfa_kill(dfa);
+	//free(activeNode);
 	free(c);
-	//dfa_kill(dfa);
+	fclose(fp);
 	return 0;
 }
 
@@ -106,35 +107,35 @@ dfaType *buildDfaType(FILE *fp) { // range = argv[2]?
 		i = extractWord(h->misc, headerTemp, i);
 		dfa_addNode(dfa, headerTemp);
 	}
-	
+
 	//DEBUGKOD
 	free(h->accepted);
 	free(h->misc);
 	free(h);
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
 
 	conns *con = malloc(sizeof(conns));
 		con->orig = calloc(sizeof(char), MAX_LABEL_LENGTH);
 		con->dest = calloc(sizeof(char), MAX_LABEL_LENGTH);
 		con->input = calloc(sizeof(char), MAX_LABEL_LENGTH); // length 2?
 	while (inputConnection(con, fp)){
-		printf("%s -%s-> %s", con->orig, con->input, con->dest);
+		printf("%s -%s-> %s\n", con->orig, con->input, con->dest);
 		dfa_addConnection(dfa, con->orig, con->input, con->dest);
 		con->input = calloc(sizeof(char), MAX_LABEL_LENGTH);
 	}
-	
+
 	free(con->orig);
 	free(con->input);
 	free(con->dest);
 	free(con);
-	
-	
+
+
 	//LÄSER CONNECTIONS WHILE LOOP
 
 		//TA HAND OM VARJE RAD

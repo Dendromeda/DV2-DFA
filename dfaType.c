@@ -127,6 +127,7 @@ void dfa_setAccepted(dfaType *dfa, char *label){
 void dfa_kill(dfaType *dfa){
 	table_kill(dfa->nodes);
 	table_kill(dfa->accepted);
+	free(dfa->start);
 	free(dfa);
 
 }
@@ -141,7 +142,7 @@ char *dfa_traverse(dfaType *dfa, char *orig, char *input){
 		fprintf(stderr, "\nINVALID INPUT FOR THIS DFA: '%s'\n", input);
 		printf("Exiting....\n");
 		exit(2);
-		
+
 	}
 }
 
