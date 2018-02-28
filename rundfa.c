@@ -1,4 +1,6 @@
 #include "rundfa.h"
+#include "table.h"
+
 
 struct dfaHeader{
 	char *start;
@@ -12,40 +14,54 @@ struct connections{
 	char *dest;
 };
 
+FILE *openFile(char *file);
+
 int main(int argc, char **argv){
+	FILE *fp = openFile("test");
+	dfaType *dfa = buildDfaType(fp);
+
+	char *str = "1111202";
+	int i = 0;
+	char *activeNode = malloc(sizeof(char)*MAX_LABEL_LENGTH);
+	activeNode = dfa_getStart(dfa);
+	char *c = malloc(sizeof(char)*2);
+	c[1] = '\0';
+		printf("\nmain:\n");
+	while(str[i]){
+		c[0] = str[i];
+		printf("%s", activeNode);
+		activeNode = dfa_traverse(dfa, activeNode, c);
+		printf(" -%s-> %s\n\n", c, activeNode);
+		i++;
+	}
+	if (dfa_checkAccepted(dfa, activeNode)){
+		printf("OJJ, det funkar (kanske)\n");
+	}
+
+
 	return 0;
 }
 
 dfaHeader *createHeader(FILE *fp){
 	dfaHeader *h = headerInit();
-	readLine(h->start, fp);
-	readLine(h->accepted, fp);
-	readLine(h->misc, fp);
+	fgets(h->start, MAX_LINE_SIZE, fp);
+	fgets(h->accepted, MAX_LINE_SIZE, fp);
+	fgets(h->misc, MAX_LINE_SIZE, fp);
 	return h;
 }
 
-void inputConnection(connections *con, FILE *fp){
+bool inputConnection(connections *con, FILE *fp){
 	char *line = calloc(sizeof(char),MAX_LINE_SIZE);
-	fgets(line, MAX_LINE_SIZE, fp);
+	if (fgets(line, MAX_LINE_SIZE, fp) == NULL){
+		free(line);
+		return false;
+	}
 	int i = 0;
-	int j = 0;
-	while (line[i] != ' ' && line[i] != '\0'){
-		con->orig[j] = line[i];
-		i++;
-		j++;
-	}
-	j = 0;
-	while (line[i] != ' ' && line[i] != '\0'){
-		con->input[j] = line[i];
-		i++;
-		j++;
-	}
-	j = 0;
-	while (line[i] != '\0'){
-		con->dest[j] = line[i];
-		i++;
-		j++;
-	}
+	i = extractWord(line, con->orig, i);
+	i = extractWord(line, con->input, i);
+	extractWord(line, con->dest, i);
+	free(line);
+	return true;
 }
 
 dfaHeader *headerInit(void){
@@ -72,36 +88,32 @@ dfaType *buildDfaType(FILE *fp) { // range = argv[2]?
 		}
 	}*/
 	//SKAPA DFATYPE MED HJÄLP AV HEADERINFO
+	extractWord(h->start, h->start, 0);
 	dfaType *dfa = dfa_init(NODE_CAPACITY, h->start, INPUT_RANGE);
 
-	char *headerTemp = calloc(sizeof(char), MAX_LABEL_LENGTH);
+	char *headerTemp;
 	int i = 0;
-	while (headerTemp!= NULL){
-		int j = 0;
-		while (h->accepted[i] != ' '){
-			headerTemp[j] = h->accepted[i];
-			i++;
-			j++;
-		}
-		headerTemp[j] = '\0';
+	while (h->accepted[i]){
+		headerTemp = calloc(sizeof(char), MAX_LABEL_LENGTH);
+		i = extractWord(h->accepted, headerTemp, i);
 		dfa_addNode(dfa, headerTemp);
 		dfa_setAccepted(dfa, headerTemp);
-		headerTemp = calloc(sizeof(char), MAX_LABEL_LENGTH);
-
 	}
-	while (headerTemp!= NULL){
-		int j = 0;
-		while (h->misc[i] != ' '){
-			headerTemp[j] = h->misc[i];
-			i++;
-			j++;
-		}
-		headerTemp[j] = '\0';
+	i = 0;
+	while (h->misc[i]){
+		headerTemp = calloc(sizeof(char), MAX_LABEL_LENGTH);
+		i = extractWord(h->misc, headerTemp, i);
 		dfa_addNode(dfa, headerTemp);
-		headerTemp = calloc(sizeof(char), MAX_LABEL_LENGTH);
-
 	}
 
+	connections *con = malloc(sizeof(connections));
+		con->orig = calloc(sizeof(char), MAX_LABEL_LENGTH);
+		con->dest = calloc(sizeof(char), MAX_LABEL_LENGTH);
+		con->input = calloc(sizeof(char), MAX_LABEL_LENGTH); // length 2?
+	while (inputConnection(con, fp)){
+		dfa_addConnection(dfa, con->orig, con->input, con->dest);
+		con->input = calloc(sizeof(char), MAX_LABEL_LENGTH);
+	}
 	//LÄSER CONNECTIONS WHILE LOOP
 
 		//TA HAND OM VARJE RAD
@@ -114,6 +126,28 @@ dfaType *buildDfaType(FILE *fp) { // range = argv[2]?
 
 }
 
-void extractWord(char *line, char *str, int i){
+int extractWord(char *line, char *str, int i){
+	int j = 0;
+	while ((line[i] != ' ') && (line[i] != '\0')){
+		if (line[i] == '\n'){
+			i++;
+			continue;
+		}
+		str[j] = line[i];
+		i++;
+		j++;
+	}
+	str[j] = '\0';
+	i++;
+	//printf("%s\n", str);
+	return i;
+}
 
+FILE *openFile(char *file){
+	FILE *fp = fopen(file, "r");
+	if(fp == NULL) {
+		fprintf(stderr, "Couldn't open input file %s\n", file);
+		exit(2);
+	}
+	return fp;
 }

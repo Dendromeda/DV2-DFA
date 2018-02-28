@@ -28,6 +28,8 @@ size_t hashFunc(void *key);
  */
 dfaType *dfa_init(size_t cap, char *start, size_t range);
 
+char *dfa_getStart(dfaType *dfa);
+
 /* Function:	addNode
  * Description:	Creates dfaNode with label,and adds it to table of nodes in
  				dfaType with label as key
@@ -72,5 +74,13 @@ char *dfa_traverse(dfaType *dfa, char *orig, char *input);
  */
 bool dfa_checkAccepted(dfaType *dfa, char *endNodeLabel);
 
+//DEBUGKOD
+table *getNodeTable(dfaType *dfa);
+
+
+typedef struct{
+	char *label;
+	table *connections;
+}dfaNode;
 
 #endif

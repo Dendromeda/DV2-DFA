@@ -14,10 +14,12 @@ typedef struct dfaHeader dfaHeader;
 
 dfaHeader *createHeader(FILE *fp);
 
-void inputConnection(connections *con, FILE *fp);
+bool inputConnection(connections *con, FILE *fp);
 
 dfaHeader *headerInit(void);
 
 void readLine(char *str, FILE *fp);
 
 dfaType *buildDfaType(FILE *fp);
+
+int extractWord(char *line, char *str, int i);

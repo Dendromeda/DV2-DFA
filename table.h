@@ -24,7 +24,8 @@ typedef struct table table;
  * \param [in] hash The key hash function (may be NULL if not a hash table).
  * \return A dynamically allocated empty table.
  */
-table *table_empty(int capacity, key_compare_func cmp, key_hash_func hash);
+ table *table_empty(int capacity, key_compare_func cmp, key_hash_func hash,
+                    keyFreeFunc keyFree, valFreeFunc valFree);
 
 
 /**
@@ -81,6 +82,6 @@ void table_remove(table *t, KEY key);
  *
  * \param [in] t The table to deallocate.
  */
-void table_kill(table *t, keyFreeFunc keyFree, valFreeFunc valFree);
+void table_kill(table *t);
 
 #endif

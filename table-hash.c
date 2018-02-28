@@ -19,11 +19,21 @@ cell *cell_create(KEY key, VALUE val, cell *link){
 	return c;
 }
 
-void cell_kill(cell **c){ // Dubbelpekare pekar på länken i föregående värde
+void cell_kill(cell **c, keyFreeFunc keyFree, valFreeFunc valFree){ // Dubbelpekare pekar på länken i föregående värde
 //eller pekaren i arrayen (om cellen är först i listan)
 	cell *tmp = (*c)->next;
-	free((*c)->key);
-	free((*c)->val);
+	if (keyFree){
+		keyFree((*c)->key);
+	}
+	else{
+		free((*c)->key);
+	}
+	if (valFree){
+		valFree((*c)->val);
+	}
+	else{
+		free((*c)->val);
+	}
 	free(*c);
 	*c = tmp;
 }
@@ -37,6 +47,8 @@ struct table
 	//Dubbelpekare till första elementet i en array med cell-pekare
 	key_compare_func key_cmp;
 	key_hash_func hash;
+	keyFreeFunc keyFree;
+	valFreeFunc valFree;
 };
 
 cell **table_find(table *t, KEY key){
@@ -52,8 +64,8 @@ cell **table_find(table *t, KEY key){
 	return c;
 }
 
-table *table_empty(int capacity, key_compare_func cmp, key_hash_func hash)
-{
+table *table_empty(int capacity, key_compare_func cmp, key_hash_func hash,
+                   keyFreeFunc keyFree, valFreeFunc valFree){
     table *t;
 
     t = malloc(sizeof *t);
@@ -63,6 +75,8 @@ table *table_empty(int capacity, key_compare_func cmp, key_hash_func hash)
 	//Allokerar och rensar minne åt cellpekar-arrayen,
 	t->key_cmp = cmp;
 	t->hash = hash;
+	t->keyFree = keyFree;
+	t->valFree = valFree;
     return t;
 }
 
@@ -78,7 +92,7 @@ void table_insert(table *t, KEY key, VALUE val)
 	int ix = (t->hash(key))%(t->cap);
     cell **d = table_find(t, key);
 	if (*d != NULL){ // Om table_find hittat dublett, tas cellen bort
-		cell_kill(d);
+		cell_kill(d, t->keyFree, t->valFree);
 		t->size -= 1;
 		// Minskar t->size trots att det ökas igen.
 		//Detta för att slippa göra en extra koll
@@ -104,27 +118,20 @@ void table_remove(table *t, KEY key)
 {
     cell **c = table_find(t, key);
 	if (*c != NULL){ //Omm nyckel hittas ska ett par tas bort
-		cell_kill(c);
+		cell_kill(c, t->keyFree, t->valFree);
 		t->size -= 1;
 	}
 }
 
 
-void table_kill(table *t, keyFreeFunc keyFree, valFreeFunc valFree){
+void table_kill(table *t){
 	cell *c;
     for (size_t i = 0; i < t->cap; i++){
 		c = t->buckets[i];
 		while (c != NULL){ //Om pekaren i arrayen är NULL är bucket tom
 			cell *tmp = c;
 			c = c->next;
-
-			if (keyFree){
-				keyFree(c->key);
-			}
-			if (valFree){
-				valFree(c->val);
-			}
-			cell_kill(&tmp);
+			cell_kill(&tmp, t->keyFree, t->valFree);
 		}
 	}
 	free(t->buckets);

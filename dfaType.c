@@ -1,15 +1,16 @@
 #include "dfaType.h"
+#include <stdio.h>
 
-typedef struct{
+/*typedef struct{
 	char *label;
 	table *connections;
-}dfaNode;
+}dfaNode; */
 
 struct dfaType{
   size_t range;
   char *start;
-  table *accepted;
   table *nodes;
+  table *accepted;
 };
 
 static void freeNode(void *n);
@@ -60,11 +61,11 @@ static char *nodeGetLabel(dfaNode *n){
  * Input:		dfaNode
  * Output:		-
  */
-static void freeNode(void *n){
-	dfaNode *node = n;
-	table_kill(node->connections, *free, *free);
-	free(node->label);
-	free(node);
+static void freeNode(void *v){
+	dfaNode *n = n;
+	table_kill(n->connections);
+	free(n->label);
+	free(n);
 }
 
 /* Function:	getNode
@@ -81,17 +82,23 @@ dfaType *dfa_init(size_t cap, char *start, size_t range){
 	dfaType *dfa = malloc(sizeof(dfaType));
 	dfa->range = range;
 	dfa->start = start;
-	dfa->accepted = table_empty(cap, &stringcmp, &hashFunc);
-	dfa->nodes = table_empty(cap, &stringcmp, &hashFunc);
+	dfa->nodes = table_empty(cap, &stringcmp, &hashFunc, *free, &freeNode);
+	dfa->accepted = table_empty(cap, &stringcmp, &hashFunc, *free, NULL);
 	return dfa;
 }
 
+char *dfa_getStart(dfaType *dfa){
+	char *s = dfa->start;
+	return s;
+}
 
 void dfa_addNode(dfaType *dfa, char *label){
 	dfaNode *n = malloc(sizeof(dfaNode));
 	n->label = label;
-	n->connections = table_empty(dfa->range, stringcmp, hashFunc);
+	n->connections = table_empty(dfa->range, stringcmp, hashFunc,
+		                         *free, &freeNode);
 	table_insert(dfa->nodes, (void*)label, n);
+	printf("ADDED %s\n", label);
 }
 
 
@@ -99,6 +106,14 @@ void dfa_addConnection(dfaType *dfa, char *orig, char *input, char *dest){
 	dfaNode *origNode = getNode(dfa, orig);
 	dfaNode *destNode = getNode(dfa, dest);
 	table_insert(origNode->connections, input, destNode);
+
+	//DEbUGKOD
+	printf("origNode: %s\n", nodeGetLabel(origNode));
+	printf("destNode: %s\n", nodeGetLabel(destNode));
+	dfaNode *n = origNode;
+	printf("%s", nodeGetLabel(n));
+	n = getNode(dfa, dfa_traverse(dfa, nodeGetLabel(origNode), input));
+	printf(" -%s-> %s\n\n", input, nodeGetLabel(n));
 }
 
 
@@ -109,8 +124,8 @@ void dfa_setAccepted(dfaType *dfa, char *label){
 
 
 void dfa_kill(dfaType *dfa){
-	table_kill(dfa->nodes, *free, &freeNode);
-	table_kill(dfa->accepted, *free, NULL);
+	table_kill(dfa->nodes);
+	table_kill(dfa->accepted);
 
 }
 
@@ -121,7 +136,10 @@ char *dfa_traverse(dfaType *dfa, char *orig, char *input){
 	if (destNode != NULL) {
 		return nodeGetLabel(destNode);
 	} else {
-		return NULL;
+		fprintf(stderr, "\nINVALID INPUT FOR THIS DFA: '%s'\n", input);
+		printf("Exiting....\n");
+		exit(2);
+		
 	}
 }
 
@@ -132,4 +150,9 @@ bool dfa_checkAccepted(dfaType *dfa, char *endNodeLabel){
 	} else {
 		return false;
 	}
+}
+
+//DEBUGKOD
+table *getNodeTable(dfaType *dfa){
+	return dfa->nodes;
 }
