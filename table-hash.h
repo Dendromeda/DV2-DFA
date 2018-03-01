@@ -22,6 +22,8 @@ typedef struct table table;
  * \param [in] capacity The capacity of the underlying data structure (if applicable).
  * \param [in] cmp The key compare function (tests key equality).
  * \param [in] hash The key hash function (may be NULL if not a hash table).
+ * \param [in] keyFree The free function for the keys (may be NULL if not wanted).
+ * \param [in] valFree The free function for the values (may be NULL if not wanted)-
  * \return A dynamically allocated empty table.
  */
  table *table_empty(int capacity, key_compare_func cmp, key_hash_func hash,

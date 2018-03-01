@@ -20,6 +20,9 @@ int main(int argc, char **argv){
 	FILE *fp = openFile("test");
 	dfaType *dfa = buildDfaType(fp);
 
+	//TODO
+	//GLÖM INTE BORT FILINLÄSNING DUMFAN.
+
 	char *str = "111111111111";
 	int i = 0;
 	char *activeNode = dfa_getStart(dfa);
@@ -136,6 +139,13 @@ int extractWord(char *line, char *str, int i){
 	return i;
 }
 
+
+/* Function:	openFile
+ * Description:	Opens a file, if not possible it exits the program and gives
+ 				an error message.
+ * Input:		A string with the filepath.
+ * Output:		File pointer.
+ */
 FILE *openFile(char *file){
 	FILE *fp = fopen(file, "r");
 	if(fp == NULL) {

@@ -1,6 +1,16 @@
+/*
+DV2: Algoritmer och problemlösning.
+File: dfaType.c
+Name: Adam Lindgren & Jakob Lundin.
+CS-user: dv17aln & c14jln
+Date: 28 Februari 2018
+Description: Creates a definite finite automaton.
+*/
+
 #include "dfaType.h"
 #include <stdio.h>
 
+//Internal struct of node/state.
 typedef struct{
 	char *label;
 	table *connections;
@@ -13,11 +23,45 @@ struct dfaType{
   table *accepted;
 };
 
+//Declaration of helpfunctions.
 static void freeNode(void *n);
-
 static char *nodeGetLabel(dfaNode *n);
-
 static dfaNode *getNode(dfaType *dfa, char *str);
+
+
+//Defining helpfunctions.
+
+/* Function:	nodeGetLabel
+ * Description:	Returns label string of given dfaNode
+ * Input:		dfaNode
+ * Output:		string
+ */
+static char *nodeGetLabel(dfaNode *n){
+	return n->label;
+}
+
+
+/* Function:	nodeFree
+ * Description:	Frees all allocated memory in dfaNode structure
+ * Input:		dfaNode
+ * Output:		None
+ */
+static void freeNode(void *v){
+	dfaNode *n = v;
+	table_kill(n->connections);
+	free(n);
+}
+
+
+/* Function:	getNode
+ * Description:	Returns the node corresponding to the given string.
+ * Input:		dfaNode, string
+ * Output:		dfaNode
+ */
+static dfaNode *getNode(dfaType *dfa, char *str){
+	return table_lookup(dfa->nodes, str);
+}
+
 
 bool stringcmp(void *p1, void *p2){
 	int i = 0;
@@ -38,6 +82,7 @@ bool stringcmp(void *p1, void *p2){
 	}
 }
 
+
 size_t hashFunc(void *key){
 	int e = 0;
 	char *str = key;
@@ -45,36 +90,6 @@ size_t hashFunc(void *key){
 			e += str[i];
 	}
 	return e;
-}
-
-/* Function:	nodeGetLabel
- * Description:	Returns label string of given dfaNode
- * Input:		dfaNode
- * Output:		string
- */
-static char *nodeGetLabel(dfaNode *n){
-	return n->label;
-}
-
-/* Function:	nodeFree
- * Description:	frees all allocated memory in dfaNode structure
- * Input:		dfaNode
- * Output:		-
- */
-static void freeNode(void *v){
-	dfaNode *n = v;
-	table_kill(n->connections);
-	//free(n->label);
-	free(n);
-}
-
-/* Function:	getNode
- * Description:	Returns the node corresponding to the given string.
- * Input:		dfaNode, string
- * Output:		dfaNode
- */
-static dfaNode *getNode(dfaType *dfa, char *str){
-	return table_lookup(dfa->nodes, str);
 }
 
 
@@ -87,10 +102,12 @@ dfaType *dfa_init(size_t cap, char *start, size_t range){
 	return dfa;
 }
 
+
 char *dfa_getStart(dfaType *dfa){
 	char *s = dfa->start;
 	return s;
 }
+
 
 void dfa_addNode(dfaType *dfa, char *label){
 	dfaNode *n = malloc(sizeof(dfaNode));
