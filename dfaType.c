@@ -1,10 +1,10 @@
 #include "dfaType.h"
 #include <stdio.h>
 
-/*typedef struct{
+typedef struct{
 	char *label;
 	table *connections;
-}dfaNode; */
+}dfaNode;
 
 struct dfaType{
   size_t range;
@@ -98,7 +98,6 @@ void dfa_addNode(dfaType *dfa, char *label){
 	n->connections = table_empty(dfa->range, stringcmp, hashFunc,
 		                         *free, NULL);
 	table_insert(dfa->nodes, (void*)label, n);
-	printf("ADDED %s\n", label);
 }
 
 
@@ -107,14 +106,6 @@ void dfa_addConnection(dfaType *dfa, char *orig, char *input, char *dest){
 	dfaNode *destNode = getNode(dfa, dest);
 	table *t = origNode->connections;
 	table_insert(t, input, destNode);
-
-	//DEbUGKOD
-	printf("origNode: %s\n", nodeGetLabel(origNode));
-	printf("destNode: %s\n", nodeGetLabel(destNode));
-	dfaNode *n = origNode;
-	printf("%s", nodeGetLabel(n));
-	n = getNode(dfa, dfa_traverse(dfa, nodeGetLabel(origNode), input));
-	printf(" -%s-> %s\n\n", input, nodeGetLabel(n));
 }
 
 
@@ -142,7 +133,6 @@ char *dfa_traverse(dfaType *dfa, char *orig, char *input){
 		fprintf(stderr, "\nINVALID INPUT FOR THIS DFA: '%s'\n", input);
 		printf("Exiting....\n");
 		exit(2);
-
 	}
 }
 
@@ -153,9 +143,4 @@ bool dfa_checkAccepted(dfaType *dfa, char *endNodeLabel){
 	} else {
 		return false;
 	}
-}
-
-//DEBUGKOD
-table *getNodeTable(dfaType *dfa){
-	return dfa->nodes;
 }

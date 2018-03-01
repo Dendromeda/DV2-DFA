@@ -36,9 +36,8 @@ int main(int argc, char **argv){
 	if (dfa_checkAccepted(dfa, activeNode)){
 		printf("OJJ, det funkar (kanske)\n");
 	}
-	//free(activeNode);
+
 	dfa_kill(dfa);
-	//free(activeNode);
 	free(c);
 	fclose(fp);
 	return 0;
@@ -74,22 +73,10 @@ dfaHeader *headerInit(void){
 	return h;
 }
 
-dfaType *buildDfaType(FILE *fp) { // range = argv[2]?
+dfaType *buildDfaType(FILE *fp) {
 
 	dfaHeader *h = createHeader(fp);
 
-	/*int c = 0;
-	for (int i = 0; h->accepted[i]; i++){  //GILLAR EJ DETTA
-		if (h->accepted[i] == ' '){
-			c++;
-		}
-	}
-	for (int i = 0; h->accepted[i]; i++){
-		if (h->misc[i] == ' '){
-			c++;
-		}
-	}*/
-	//SKAPA DFATYPE MED HJÄLP AV HEADERINFO
 	extractWord(h->start, h->start, 0);
 	dfaType *dfa = dfa_init(NODE_CAPACITY, h->start, INPUT_RANGE);
 
@@ -108,41 +95,25 @@ dfaType *buildDfaType(FILE *fp) { // range = argv[2]?
 		dfa_addNode(dfa, headerTemp);
 	}
 
-	//DEBUGKOD
-	free(h->accepted);
-	free(h->misc);
-	free(h);
-
-
-
-
-
-
-
 
 	conns *con = malloc(sizeof(conns));
 		con->orig = calloc(sizeof(char), MAX_LABEL_LENGTH);
 		con->dest = calloc(sizeof(char), MAX_LABEL_LENGTH);
-		con->input = calloc(sizeof(char), MAX_LABEL_LENGTH); // length 2?
+		con->input = calloc(sizeof(char), MAX_LABEL_LENGTH);
 	while (inputConnection(con, fp)){
 		printf("%s -%s-> %s\n", con->orig, con->input, con->dest);
 		dfa_addConnection(dfa, con->orig, con->input, con->dest);
 		con->input = calloc(sizeof(char), MAX_LABEL_LENGTH);
 	}
 
+	free(h->accepted);
+	free(h->misc);
+	free(h);
+
 	free(con->orig);
 	free(con->input);
 	free(con->dest);
 	free(con);
-
-
-	//LÄSER CONNECTIONS WHILE LOOP
-
-		//TA HAND OM VARJE RAD
-			//FSCANF PÅ VARJE RAD
-			//SPARA TILL STRUCT
-
-		//SKAPA CONNECTIONS I DFATYPE MED HJÄLP AV INTERN STRUCT
 
 	return dfa;
 
