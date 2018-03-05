@@ -53,7 +53,7 @@ int main(int argc, char **argv){
 	char *str = calloc(sizeof(char), MAX_STRING_SIZE);
 	fscanf(inFile, "%s", str);
 	while (str[i] != '\0'){
-		while (str[i] < 32){
+		while (str[i] <= 32){
 			i++;
 		}
 		c[0] = str[i];

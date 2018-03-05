@@ -1,3 +1,17 @@
+/*
+DV2: Algoritmer och problemlösning.
+File: rundfa.h
+Name: Adam Lindgren & Jakob Lundin.
+CS-user: dv17aln & c14jln
+Date: 28 Februari 2018
+Description: Creates a DFA through a given file with the start state, accepted
+			 states and other states and their transitions. It also matches a
+			 given file against this DFA.
+Required input: A file path with instructions for the DFA and a filepath with
+				text to match against the DFA.
+Output: It writes to terminal if the given file matches with the given DFA.
+*/
+
 #include "dfaType.h"
 #include <stdlib.h>
 #include <stdio.h>
