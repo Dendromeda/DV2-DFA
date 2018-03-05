@@ -8,60 +8,64 @@
 #define MAX_LABEL_LENGTH 16
 #define INPUT_RANGE 2
 
-typedef struct conns conns;
+typedef struct connections connections;
 
 typedef struct dfaHeader dfaHeader;
 
 
 /* Function:	createHeader
- * Description:	Creates dfaNode with label,and adds it to table of nodes in
- 				dfaType with label as key
- * Input:		A dfaType and a string with the label.
- * Output:		None.
+ * Description:	TODO
+ * Input:		A file pointer.
+ * Output:		A dfaHeader pointer.
  */
 dfaHeader *createHeader(FILE *fp);
 
 
 /* Function:	inputConnection
- * Description:	Creates dfaNode with label,and adds it to table of nodes in
- 				dfaType with label as key
- * Input:		A dfaType and a string with the label.
- * Output:		None.
+ * Description:	TODO
+ * Input:		A connections pointer and a file pointer.
+ * Output:		Boolean.
  */
-bool inputConnection(conns *con, FILE *fp);
+bool inputConnection(connections *con, FILE *fp);
 
 
 /* Function:	headerInit
- * Description:	Creates dfaNode with label,and adds it to table of nodes in
- 				dfaType with label as key
- * Input:		A dfaType and a string with the label.
- * Output:		None.
+ * Description:	Initiates a dfaHeader struct.
+ * Input:		None.
+ * Output:		A dfaHeader pointer.
  */
 dfaHeader *headerInit(void);
 
 
+/* Function:	connectionsInit
+ * Description:	Initiates a connections struct.
+ * Input:		None.
+ * Output:		A connections pointer.
+ */
+connections *connectionsInit(void);
+
+
 /* Function:	readLine
- * Description:	Creates dfaNode with label,and adds it to table of nodes in
- 				dfaType with label as key
- * Input:		A dfaType and a string with the label.
+ * Description:	TODO
+ * Input:		A string and a file pointer.
  * Output:		None.
  */
 void readLine(char *str, FILE *fp);
 
 
 /* Function:	buildDfaType
- * Description:	Creates dfaNode with label,and adds it to table of nodes in
- 				dfaType with label as key
- * Input:		A dfaType and a string with the label.
- * Output:		None.
+ * Description:	TODO
+ * Input:		A file pointer.
+ * Output:		A dfaType pointer.
  */
 dfaType *buildDfaType(FILE *fp);
 
 
 /* Function:	extractWord
- * Description:	Creates dfaNode with label,and adds it to table of nodes in
- 				dfaType with label as key
- * Input:		A dfaType and a string with the label.
- * Output:		None.
+ * Description:	TODO
+ * Input:		A string with the input line and a string for the extracted
+ 				word and an integer with the index where the word will be read
+				in the input line.
+ * Output:		An integer.
  */
 int extractWord(char *line, char *str, int i);
