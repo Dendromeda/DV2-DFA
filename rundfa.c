@@ -4,10 +4,12 @@ File: rundfa.c
 Name: Adam Lindgren & Jakob Lundin.
 CS-user: dv17aln & c14jln
 Date: 28 Februari 2018
-Description: TODO
+Description: Creates a DFA through a given file with the start state, accepted
+			 states and other states and their transitions. It also matches a
+			 given file against this DFA.
 Required input: A file path with instructions for the DFA and a filepath with
 				text to match against the DFA.
-Output: It writes to terminal if it matches or not with the given DFA.
+Output: It writes to terminal if the given file matches with the given DFA.
 */
 
 #include "rundfa.h"
@@ -34,10 +36,13 @@ static void freeCon(connections *con);
 static void freeHeader(dfaHeader *h);
 static void extractHeader(dfaType *dfa, char *headerStr, bool isAccepted);
 
+
 int main(int argc, char **argv){
 	validateParams(argc);
+
 	FILE *dfaFile = openFile(argv[1]);
 	FILE *inFile = openFile(argv[2]);
+
 	dfaType *dfa = buildDfaType(dfaFile);
 	fclose(dfaFile);
 
@@ -55,28 +60,15 @@ int main(int argc, char **argv){
 		activeNode = dfa_traverse(dfa, activeNode, c);
 		i++;
 	}
+
 	if (dfa_checkAccepted(dfa, activeNode)){
-		printf("OJJ, det funkar (kanske)\n");
+		printf("String matches\n");
+	} else {
+		printf("String doesn't match\n");
 	}
-/*
-	char *str = "111111111111";
-	int i = 0;
-	char *activeNode = dfa_getStart(dfa);
-	char *c = malloc(sizeof(char)*2);
-	c[1] = '\0';
-		printf("\nmain:\n");
-	while(str[i]){
-		c[0] = str[i];
-		printf("%s", activeNode);
-		activeNode = dfa_traverse(dfa, activeNode, c);
-		printf(" -%s-> %s\n\n", c, activeNode);
-		i++;
-	}
-	if (dfa_checkAccepted(dfa, activeNode)){
-	printf("OJJ, det funkar (kanske)\n");
-	}*/
 
 	free(c);
+	free(str);
 	dfa_kill(dfa);
 	fclose(inFile);
 	return 0;
@@ -92,14 +84,17 @@ dfaHeader *createHeader(FILE *fp){
 
 bool inputConnection(connections *con, FILE *fp){
 	char *line = calloc(sizeof(char),MAX_LINE_SIZE);
+
 	if (fgets(line, MAX_LINE_SIZE, fp) == NULL){
 		free(line);
 		return false;
 	}
+
 	int i = 0;
 	i = extractWord(line, con->orig, i);
 	i = extractWord(line, con->input, i);
 	extractWord(line, con->dest, i);
+
 	free(line);
 	return true;
 }
@@ -124,6 +119,7 @@ dfaType *buildDfaType(FILE *fp) {
 
 	dfaHeader *h = createHeader(fp);
 
+	//Initiates the DFA with the start state.
 	extractWord(h->start, h->start, 0);
 	dfaType *dfa = dfa_init(NODE_CAPACITY, h->start, INPUT_RANGE);
 
@@ -133,13 +129,14 @@ dfaType *buildDfaType(FILE *fp) {
 	//Extract the rest of the states.
 	extractHeader(dfa, h->misc, false);
 
+	//Builds all the connections between the states
 	connections *con = connectionsInit();
 	while (inputConnection(con, fp)){
-		printf("%s -%s-> %s\n", con->orig, con->input, con->dest);
 		dfa_addConnection(dfa, con->orig, con->input, con->dest);
 		con->input = calloc(sizeof(char), MAX_LABEL_LENGTH);
 	}
 
+	//Frees the resources not needed anymore
 	freeHeader(h);
 	freeCon(con);
 	return dfa;
@@ -147,6 +144,7 @@ dfaType *buildDfaType(FILE *fp) {
 
 int extractWord(char *line, char *str, int i){
 	int j = 0;
+
 	while ((line[i] != ' ') && (line[i] != '\0')){
 		if (line[i] == '\n' || line[i] == '\r'){
 			i++;
@@ -158,7 +156,6 @@ int extractWord(char *line, char *str, int i){
 	}
 	str[j] = '\0';
 	i++;
-	printf("%s\n", str);
 	return i;
 }
 

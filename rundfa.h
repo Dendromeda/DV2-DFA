@@ -15,7 +15,8 @@ typedef struct dfaHeader dfaHeader;
 
 
 /* Function:	createHeader
- * Description:	TODO
+ * Description:	Reads the first three lines in the given file and creates
+ 				a dfaHeader struct.
  * Input:		A file pointer.
  * Output:		A dfaHeader pointer.
  */
@@ -23,7 +24,8 @@ dfaHeader *createHeader(FILE *fp);
 
 
 /* Function:	inputConnection
- * Description:	TODO
+ * Description:	Extracts the transistions from the given file line and puts them
+ 				in the connections struct.
  * Input:		A connections pointer and a file pointer.
  * Output:		Boolean.
  */
@@ -46,16 +48,8 @@ dfaHeader *headerInit(void);
 connections *connectionsInit(void);
 
 
-/* Function:	readLine
- * Description:	TODO
- * Input:		A string and a file pointer.
- * Output:		None.
- */
-void readLine(char *str, FILE *fp);
-
-
 /* Function:	buildDfaType
- * Description:	TODO
+ * Description:	Builds the DFA from the given file.
  * Input:		A file pointer.
  * Output:		A dfaType pointer.
  */
@@ -63,7 +57,8 @@ dfaType *buildDfaType(FILE *fp);
 
 
 /* Function:	extractWord
- * Description:	TODO
+ * Description:	Extracts the first word it encounters from the given string
+ 				pointer
  * Input:		A string with the input line and a string for the extracted
  				word and an integer with the index where the word will be read
 				in the input line.
