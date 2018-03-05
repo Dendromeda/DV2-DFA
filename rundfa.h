@@ -7,6 +7,7 @@
 #define NODE_CAPACITY 2
 #define MAX_LABEL_LENGTH 16
 #define INPUT_RANGE 2
+#define MAX_STRING_SIZE 128
 
 typedef struct connections connections;
 

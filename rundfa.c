@@ -13,7 +13,6 @@ Output: It writes to terminal if it matches or not with the given DFA.
 #include "rundfa.h"
 #include "table.h"
 
-
 struct dfaHeader{
 	char *start;
 	char *accepted;
@@ -37,12 +36,29 @@ static void extractHeader(dfaType *dfa, char *headerStr, bool isAccepted);
 
 int main(int argc, char **argv){
 	validateParams(argc);
-	FILE *fp = openFile("test");
-	dfaType *dfa = buildDfaType(fp);
+	FILE *dfaFile = openFile(argv[1]);
+	FILE *inFile = openFile(argv[2]);
+	dfaType *dfa = buildDfaType(dfaFile);
+	fclose(dfaFile);
 
-	//TODO
-	//GLÖM INTE BORT FILINLÄSNING DUMFAN.
-
+	int i = 0;
+	char *activeNode = dfa_getStart(dfa);
+	char *c = malloc(sizeof(char)*2);
+	c[1] = '\0';
+	char *str = calloc(sizeof(char), MAX_STRING_SIZE);
+	fscanf(inFile, "%s", str);
+	while (str[i] != '\0'){
+		while (str[i] < 32){
+			i++;
+		}
+		c[0] = str[i];
+		activeNode = dfa_traverse(dfa, activeNode, c);
+		i++;
+	}
+	if (dfa_checkAccepted(dfa, activeNode)){
+		printf("OJJ, det funkar (kanske)\n");
+	}
+/*
 	char *str = "111111111111";
 	int i = 0;
 	char *activeNode = dfa_getStart(dfa);
@@ -57,12 +73,12 @@ int main(int argc, char **argv){
 		i++;
 	}
 	if (dfa_checkAccepted(dfa, activeNode)){
-		printf("OJJ, det funkar (kanske)\n");
-	}
+	printf("OJJ, det funkar (kanske)\n");
+	}*/
 
-	dfa_kill(dfa);
 	free(c);
-	fclose(fp);
+	dfa_kill(dfa);
+	fclose(inFile);
 	return 0;
 }
 
@@ -197,7 +213,7 @@ static FILE *openFile(char *file){
  * Output:		None.
  */
 static void validateParams(int argc){
-	if(argc != 2) {
+	if(argc != 3) {
 		usageText();
 	}
 }
