@@ -13,7 +13,7 @@ Output: It writes to terminal if the given file matches with the given DFA.
 */
 
 #include "rundfa.h"
-#include "table.h"
+
 
 struct dfaHeader{
 	char *start;

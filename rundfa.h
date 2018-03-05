@@ -17,6 +17,7 @@ Output: It writes to terminal if the given file matches with the given DFA.
 #include <stdio.h>
 #include <string.h>
 
+
 #define MAX_LINE_SIZE 256
 #define NODE_CAPACITY 2
 #define MAX_LABEL_LENGTH 16
