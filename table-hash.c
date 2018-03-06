@@ -1,6 +1,6 @@
 #include <stdlib.h>
 
-#include "table.h"
+#include "table-hash.h"
 
 typedef struct cell cell;
 
