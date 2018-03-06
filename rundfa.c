@@ -39,6 +39,7 @@ static void extractHeader(dfaType *dfa, char *headerStr, bool isAccepted);
 
 int main(int argc, char **argv){
 	validateParams(argc);
+	int returnVal;
 
 	FILE *dfaFile = openFile(argv[1]);
 	FILE *inFile = openFile(argv[2]);
@@ -52,10 +53,7 @@ int main(int argc, char **argv){
 	c[1] = '\0';
 	char *str = calloc(sizeof(char), MAX_STRING_SIZE);
 	fscanf(inFile, "%s", str);
-	while (str[i] != '\0'){
-		while (str[i] <= 32){
-			i++;
-		}
+	while (str[i] > 32){
 		c[0] = str[i];
 		activeNode = dfa_traverse(dfa, activeNode, c);
 		i++;
@@ -63,7 +61,9 @@ int main(int argc, char **argv){
 
 	if (dfa_checkAccepted(dfa, activeNode)){
 		printf("String matches\n");
+		returnVal = 0;
 	} else {
+		returnVal = 1;
 		printf("String doesn't match\n");
 	}
 
@@ -71,7 +71,7 @@ int main(int argc, char **argv){
 	free(str);
 	dfa_kill(dfa);
 	fclose(inFile);
-	return 0;
+	return returnVal;
 }
 
 dfaHeader *createHeader(FILE *fp){
